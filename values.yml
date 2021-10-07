@@ -1,0 +1,15 @@
+extraVolumes:
+  - name: output
+    hostPath:
+      path: /tmp/fluent-bit-test
+extraVolumeMounts:
+  - name: output
+    mountPath: /tmp/fluent-bit-test
+
+config:
+  outputs: |
+    [OUTPUT]
+        Name file
+        Match *
+        Format plain
+        Path /tmp/fluent-bit-test
