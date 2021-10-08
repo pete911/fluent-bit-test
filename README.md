@@ -6,11 +6,12 @@ project to manually test fluent-bit configurations
 - [helm](https://helm.sh/docs/helm/helm_install/) at least 3.7.0 version
 
 ## run
-- `./test.sh` start kind cluster
-- logs are sent to `/tmp/fluent-bit-test/` directory
-  - view fluent-bit logs `cat /tmp/fluent-bit-test/kube.var.log.containers.fluent-bit-*.log | jq .`
-  - view etcd logs `cat /tmp/fluent-bit-test/kube.var.log.containers.etcd-*.log | jq .`
-- `kind delete cluster --name fluent-bit-test && rm -r /tmp/fluent-bit-test` delete cluster and logs
+- modify [values.yml](values.yml) if needed and run `./test.sh` start kind cluster
+- cluster runs test app exposed on `30500` port, which can be used to generate logs by POSTing data to it:
+  - `curl -v -X POST -d 'test log message' http://localhost:30500`
+- logs are sent to `/tmp/fluent-bit-test/` local directory
+  - `tail -f /tmp/fluent-bit-test/kube.var.log.containers.log-app-*.log | jq .`
+- clean up after test `kind delete cluster --name fluent-bit-test && rm -r /tmp/fluent-bit-test`
 
 ## debug kind cluster
 - `docker ps` - list kind cluster nodes running as docker images

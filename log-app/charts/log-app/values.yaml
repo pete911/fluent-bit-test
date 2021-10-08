@@ -1,0 +1,10 @@
+replicaCount: 1
+
+image:
+  repository: fluent-bit-test/log-app
+  pullPolicy: IfNotPresent
+  tag: "test"
+
+service:
+  port: 80
+  nodePort: 30500
