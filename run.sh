@@ -16,6 +16,9 @@ fi
 docker build -t fluent-bit-test/log-app:test "$dir"/log-app/.
 kind load docker-image fluent-bit-test/log-app:test --name fluent-bit-test
 
+docker build -t fluent-bit-test/fluent-bit-test:test "$dir"/out-plugin/.
+kind load docker-image fluent-bit-test/fluent-bit-test:test --name fluent-bit-test
+
 # install fluent-bit
 helm repo add fluent https://fluent.github.io/helm-charts
 helm repo update fluent

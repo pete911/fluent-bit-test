@@ -1,3 +1,12 @@
+image:
+  repository: fluent-bit-test/fluent-bit-test
+  tag: "test"
+  pullPolicy: IfNotPresent
+
+env:
+  - name: CLUSTER_NAME
+    value: "kind-fluent-bit-test"
+
 extraVolumes:
   - name: output
     hostPath:
@@ -7,7 +16,30 @@ extraVolumeMounts:
     mountPath: /tmp/fluent-bit-test
 
 config:
+  filters: |
+    [FILTER]
+        Name kubernetes
+        Match kube.*
+        Merge_Log On
+        Keep_Log Off
+        K8S-Logging.Parser On
+        K8S-Logging.Exclude On
+
+    [FILTER]
+        Name record_modifier
+        Match *
+        Record cluster_name ${CLUSTER_NAME}
+
+    [FILTER]
+        Name modify
+        Match *
+        Rename time ts_docker
   outputs: |
+    [OUTPUT]
+        Name  fluent-bit-test
+        Match *
+        Id test_plugin
+
     [OUTPUT]
         Name file
         Match *

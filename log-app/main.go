@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 	"io"
 	"log"
 	"net/http"
@@ -9,7 +11,14 @@ import (
 	"strconv"
 )
 
-var port = 8080
+var (
+	port   = 8080
+	logger *zap.Logger
+)
+
+func init() {
+	logger = newZapLogger("log-app", zapcore.DebugLevel)
+}
 
 func main() {
 
@@ -44,6 +53,19 @@ func indexPostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	defer r.Body.Close()
-	log.Println(string(b))
+	logger.Info(string(b))
 	w.WriteHeader(http.StatusCreated)
+}
+
+func newZapLogger(appName string, level zapcore.Level) *zap.Logger {
+	config := zap.NewProductionConfig()
+	config.EncoderConfig.TimeKey = "ts_app"
+	config.EncoderConfig.EncodeTime = zapcore.RFC3339NanoTimeEncoder
+	config.Level.SetLevel(level)
+
+	logger, err := config.Build()
+	if err != nil {
+		log.Fatalf("initialise zap logger: %v", err)
+	}
+	return logger.With(zap.String("app", appName))
 }
